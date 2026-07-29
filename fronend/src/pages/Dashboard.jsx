@@ -1,52 +1,41 @@
-import DashboardLayout 
-from "../components/layout/DashboardLayout";
+import DashboardLayout from "../components/layout/DashboardLayout";
 
+import StreakWidget from "../components/dashboard/widgets/StreakWidget";
+import TodaysMissionWidget from "../components/dashboard/widgets/TodaysMissionWidget";
+import AIWidget from "../components/dashboard/widgets/AIWidget";
+import CodingHoursWidget from "../components/dashboard/widgets/CodingHoursWidget";
+import LeetCodeWidget from "../components/dashboard/widgets/LeetCodeWidget";
+import AnalyticsWidget from "../components/dashboard/widgets/AnalyticsWidget";
+import ProfileWidget from "../components/dashboard/widgets/ProfileWidget";
+import HealthWidget from "../components/dashboard/widgets/HealthWidget";
+import JournalWidget from "../components/dashboard/widgets/JournalWidget";
 
-function Dashboard(){
+export default function Dashboard() {
+  return (
+    <DashboardLayout>
+      <div className="w-full max-w-7xl space-y-6">
 
+        <StreakWidget />
 
-return(
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-<DashboardLayout>
+          <div className="space-y-6">
+            <TodayMissionWidget />
+            <ProfileWidget />
+            <HealthWidget />
+            <JournalWidget />
+          </div>
 
-<section
-className="
-text-center
-"
->
+          <div className="space-y-6">
+            <AIWidget />
+            <CodingHoursWidget />
+            <LeetCodeWidget />
+            <AnalyticsWidget />
+          </div>
 
-<h1
-className="
-text-3xl
-font-bold
-"
->
+        </div>
 
-Welcome to Horizon 🌅
-
-</h1>
-
-
-<p
-className="
-mt-3
-"
->
-
-Your personal growth operating system
-
-</p>
-
-
-</section>
-
-
-</DashboardLayout>
-
-
-)
-
+      </div>
+    </DashboardLayout>
+  );
 }
-
-
-export default Dashboard;
