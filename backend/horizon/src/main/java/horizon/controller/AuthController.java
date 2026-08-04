@@ -2,7 +2,8 @@ package horizon.controller;
 
 import horizon.dto.request.RegisterRequest;
 import horizon.dto.response.UserResponse;
-//import horizon.entity.User;
+import horizon.dto.request.LoginRequest;
+import horizon.dto.response.LoginResponse;
 import horizon.service.AuthService;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,5 +20,10 @@ public class AuthController {
     @PostMapping("/register")
     public UserResponse register(@RequestBody RegisterRequest request) {
         return authService.register(request);
+    }
+
+    @PostMapping("/login")
+    public LoginResponse login(@RequestBody LoginRequest request) {
+        return authService.login(request);
     }
 }
