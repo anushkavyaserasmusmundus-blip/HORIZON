@@ -1,0 +1,13 @@
+# React
+node_modules/
+.vite/
+dist/
+
+# VS Code
+.vscode/
+
+# Java
+target/
+
+# Environment
+.env

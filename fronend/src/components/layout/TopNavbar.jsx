@@ -2,7 +2,7 @@ import { Bell, Flame } from "lucide-react";
 import { mockProfile } from "../dashboard/widgets/Personal/mockProfile";
 import sunLogo from "../../assets/images/sun.logo.jpg";
 
-function TopNavbar({ onOpenNotifications }) {
+function TopNavbar({ onOpenNotifications, streakCount }) {
   const firstName = mockProfile.name.split(" ")[0];
 
   return (
@@ -21,7 +21,7 @@ function TopNavbar({ onOpenNotifications }) {
       <div className="ml-auto flex items-center gap-3">
         <button className="flex items-center gap-2 rounded-full border border-[#15803d] bg-[#16a34a] px-4 py-2 text-sm font-semibold text-white shadow-sm">
           <Flame size={16} className="text-white" />
-          14 day streak
+          {streakCount} day streak
         </button>
 
         <button onClick={onOpenNotifications} className="flex h-10 w-10 items-center justify-center rounded-full border border-[#D1FAE5] bg-[#ECFDF5] text-[#166534] shadow-sm">

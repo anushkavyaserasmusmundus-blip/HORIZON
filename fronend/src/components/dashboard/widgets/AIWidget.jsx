@@ -2,8 +2,12 @@ import Card from "../../common/Card";
 
 export default function AIWidget() {
   return (
-    <Card title="🤖 AI Insights">
-      <p className="text-gray-600">Your AI coaching summary will appear here soon.</p>
+    <Card title="AI suggestions coming soon">
+      <h2 className="text-4xl font-bold">28</h2>
+
+      <p className="mt-2 text-gray-600">
+        Keep your streak alive today!
+      </p>
     </Card>
   );
 }

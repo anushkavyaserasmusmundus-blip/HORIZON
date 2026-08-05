@@ -9,3 +9,4 @@ const mockCodingData = [
 ];
 
 export default mockCodingData;
+//sample data for ui

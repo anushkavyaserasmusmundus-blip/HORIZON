@@ -42,3 +42,7 @@ export default function useTasks() {
     progress,
   };
 }
+
+//hooks are used to encapsulate and manage stateful logic in React components. 
+// In this case, the useTasks hook manages the state of tasks, providing functions to add, toggle, and delete tasks, as well as calculating the progress of completed tasks. 
+// This allows for a clean separation of concerns and makes it easier to reuse the task management logic across different components.

@@ -1,58 +1,36 @@
 import { useState } from "react";
+import { registerUser } from "../services/authService";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../services/authService";
-
 import backgroundImage from "../assets/images/download.jfif";
 
-
-function Login() {
+function Register() {
 
     const navigate = useNavigate();
 
-    const [credentials, setCredentials] = useState({
+    const [formData, setFormData] = useState({
+        username: "",
         email: "",
         password: ""
     });
 
     const [error, setError] = useState("");
 
-
-
     const handleChange = (e) => {
-
-        setCredentials({
-            ...credentials,
+        setFormData({
+            ...formData,
             [e.target.name]: e.target.value
         });
-
     };
 
-
-
-    const handleSubmit = async (e) => {
-
+    const handleRegister = async (e) => {
         e.preventDefault();
-
         try {
-
-            const data = await loginUser(credentials);
-
-            localStorage.setItem(
-                "token",
-                data.token
-            );
-
-            navigate("/");
-
-        } catch(err) {
-
-            setError("Invalid email or password");
-
+            await registerUser(formData);
+            navigate("/login");
+        } catch (err) {
+            setError("Registration failed");
         }
-
     };
-
-
 
     return (
 
@@ -63,7 +41,6 @@ function Login() {
             overflow-hidden
             flex
         ">
-
 
             {/* Background Decorative Blobs */}
 
@@ -79,8 +56,6 @@ function Login() {
                 blur-3xl
             "/>
 
-
-
             <div className="
                 absolute
                 bottom-[-150px]
@@ -92,8 +67,6 @@ function Login() {
                 opacity-15
                 blur-3xl
             "/>
-
-
 
             <div className="
                 absolute
@@ -107,10 +80,6 @@ function Login() {
                 animate-pulse
             "/>
 
-
-
-
-
             {/* Main Full Screen Card */}
 
             <div className="
@@ -122,14 +91,9 @@ function Login() {
                 z-10
             ">
 
-
-
-
-
                 {/* LEFT IMAGE */}
 
                 <div
-
                     className="
                         hidden
                         md:block
@@ -138,13 +102,10 @@ function Login() {
                         bg-center
                         relative
                     "
-
                     style={{
-                        backgroundImage:`url(${backgroundImage})`
+                        backgroundImage: `url(${backgroundImage})`
                     }}
-
                 >
-
 
                     <div className="
                         absolute
@@ -152,14 +113,9 @@ function Login() {
                         bg-black/10
                     "/>
 
-
-
-
-
                     {/* Organic Wave */}
 
                     <div
-
                         className="
                             absolute
                             right-[-2px]
@@ -168,23 +124,13 @@ function Login() {
                             w-[150px]
                             bg-white
                         "
-
                         style={{
                             clipPath:
                             "path('M0 0 C120 120 30 260 120 390 C170 500 50 580 0 700 L150 700 L150 0 Z')"
                         }}
-
                     />
 
-
                 </div>
-
-
-
-
-
-
-
 
                 {/* RIGHT SECTION */}
 
@@ -197,24 +143,14 @@ function Login() {
                     md:px-20
                 ">
 
-
-
-
                     <div className="
                         w-full
                         max-w-md
                     ">
 
-
-
-
-
                         {/* Branding */}
 
-                        <div className="
-                            mb-12
-                        ">
-
+                        <div className="mb-12">
 
                             <h1 className="
                                 text-6xl
@@ -225,8 +161,6 @@ function Login() {
                                 Horizon
                             </h1>
 
-
-
                             <p className="
                                 mt-3
                                 text-xl
@@ -235,15 +169,7 @@ function Login() {
                                 Your personal LifeOS
                             </p>
 
-
                         </div>
-
-
-
-
-
-
-
 
                         <h2 className="
                             text-3xl
@@ -251,56 +177,44 @@ function Login() {
                             text-[#2C3E50]
                             mb-8
                         ">
-                            Log in
+                            Create Account
                         </h2>
 
-
-
-
-
-
-
-                        {
-                            error &&
-
-                            <p className="
-                                text-red-500
-                                mb-4
-                            ">
-                                {error}
-                            </p>
-
+                        {error &&
+                            <p className="text-red-500 mb-4">{error}</p>
                         }
 
-
-
-
-
-
-
-
                         <form
-                            onSubmit={handleSubmit}
-                            className="
-                                space-y-6
-                            "
+                            onSubmit={handleRegister}
+                            className="space-y-6"
                         >
 
-
-
+                            <input
+                                type="text"
+                                name="username"
+                                placeholder="Username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                className="
+                                    w-full
+                                    px-6
+                                    py-4
+                                    rounded-full
+                                    bg-[#FFF8EF]
+                                    border
+                                    border-[#F2D5A5]
+                                    focus:outline-none
+                                    focus:ring-2
+                                    focus:ring-[#F4B643]
+                                "
+                            />
 
                             <input
-
                                 type="email"
-
                                 name="email"
-
                                 placeholder="Email"
-
-                                value={credentials.email}
-
+                                value={formData.email}
                                 onChange={handleChange}
-
                                 className="
                                     w-full
                                     px-6
@@ -313,26 +227,14 @@ function Login() {
                                     focus:ring-2
                                     focus:ring-[#F4B643]
                                 "
-
                             />
-
-
-
-
-
 
                             <input
-
                                 type="password"
-
                                 name="password"
-
                                 placeholder="Password"
-
-                                value={credentials.password}
-
+                                value={formData.password}
                                 onChange={handleChange}
-
                                 className="
                                     w-full
                                     px-6
@@ -345,20 +247,10 @@ function Login() {
                                     focus:ring-2
                                     focus:ring-[#F4B643]
                                 "
-
                             />
-
-
-
-
-
-
-
 
                             <button
-
                                 type="submit"
-
                                 className="
                                     w-full
                                     py-4
@@ -370,23 +262,11 @@ function Login() {
                                     hover:scale-[1.02]
                                     transition
                                 "
-
                             >
-
-                                Log in
-
+                                Create Account
                             </button>
 
-
-
-
                         </form>
-
-
-
-
-
-
 
                         <div className="
                             mt-8
@@ -395,64 +275,43 @@ function Login() {
                             text-sm
                         ">
 
-
-
                             <button
+                                onClick={() => navigate("/login")}
                                 className="
                                     text-[#6B7280]
                                     hover:text-[#2C3E50]
                                     transition
                                 "
                             >
-                                Forgot password?
+                                Already have an account?
                             </button>
 
-
-
-
-
                             <button
-
-                                onClick={() => navigate("/register")}
-
+                                onClick={() => navigate("/login")}
                                 className="
                                     text-[#C84D38]
                                     font-semibold
                                     hover:underline
                                     transition
                                 "
-
                             >
-                                Create account
+                                Log in
                             </button>
-
-
 
                         </div>
 
-
-
-
                     </div>
-
-
 
                 </div>
 
-
-
-
-
             </div>
 
-
-
         </div>
-
 
     );
 
 }
 
+export default Register;
 
-export default Login;
+
