@@ -1,9 +1,12 @@
 package horizon.service;
 
+import horizon.dto.response.ProfileResponse;
 import horizon.entity.Profile;
 import horizon.entity.User;
 import horizon.repository.ProfileRepository;
+import horizon.repository.UserRepository;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -11,33 +14,38 @@ import org.springframework.stereotype.Service;
 public class ProfileService {
 
     private final ProfileRepository profileRepository;
+    private final UserRepository userRepository;
 
-    public ProfileService(ProfileRepository profileRepository) {
+    public ProfileService(
+            ProfileRepository profileRepository,
+            UserRepository userRepository
+    ) {
         this.profileRepository = profileRepository;
+        this.userRepository = userRepository;
     }
 
+    public ProfileResponse getCurrentUserProfile(Authentication authentication) {
 
-    public Profile getCurrentUserProfile() {
+        String email = authentication.getName();
 
-        User user = getCurrentUser();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Profile profile = profileRepository.findByUser(user)
-                .orElseThrow(() ->
-                        new RuntimeException("Profile not found")
-                );
+                .orElseThrow(() -> new RuntimeException("Profile not found"));
 
-        return profile;
-    }
-
-
-    private User getCurrentUser() {
-
-        Object principal =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getPrincipal();
-
-        return (User) principal;
+        return new ProfileResponse(
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole(),
+                profile.getFullName(),
+                profile.getBio(),
+                profile.getDesignation(),
+                profile.getProfilePhoto(),
+                profile.getGithubUsername(),
+                profile.getLeetcodeUsername(),
+                profile.getLinkedin(),
+                profile.getLocation()
+        );
     }
 }
