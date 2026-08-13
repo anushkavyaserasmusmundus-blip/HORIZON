@@ -1,5 +1,6 @@
 package horizon.service;
 
+import horizon.dto.request.ProfileUpdateRequest;
 import horizon.dto.response.ProfileResponse;
 import horizon.entity.Profile;
 import horizon.entity.User;
@@ -7,7 +8,6 @@ import horizon.repository.ProfileRepository;
 import horizon.repository.UserRepository;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,6 +33,31 @@ public class ProfileService {
 
         Profile profile = profileRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Profile not found"));
+
+        return createResponse(user, profile);
+    }
+
+    public ProfileResponse updateProfile(
+            Authentication authentication,
+            ProfileUpdateRequest request
+    ) {
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Profile profile = profileRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Profile not found"));
+
+        profile.setFullName(request.getFullName());
+
+        Profile savedProfile = profileRepository.save(profile);
+
+        return createResponse(user, savedProfile);
+    }
+
+    private ProfileResponse createResponse(User user, Profile profile) {
 
         return new ProfileResponse(
                 user.getUsername(),
