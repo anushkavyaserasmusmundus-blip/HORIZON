@@ -50,7 +50,13 @@ public class ProfileService {
         Profile profile = profileRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Profile not found"));
 
-        profile.setFullName(request.getFullName());
+        if (request.getFullName() != null) {
+                profile.setFullName(request.getFullName());
+        }
+
+        if (request.getGithubUsername() != null) {
+                profile.setGithubUsername(request.getGithubUsername());
+        }
 
         Profile savedProfile = profileRepository.save(profile);
 
