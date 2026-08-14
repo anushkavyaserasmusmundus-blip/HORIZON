@@ -58,6 +58,14 @@ public class ProfileService {
                 profile.setGithubUsername(request.getGithubUsername());
         }
 
+        if (request.getLeetcodeUsername() != null) {
+                profile.setLeetcodeUsername(request.getLeetcodeUsername());
+        }
+
+        if (request.getCodeforcesUsername() != null) {
+                profile.setCodeforcesUsername(request.getCodeforcesUsername());
+        }
+
         Profile savedProfile = profileRepository.save(profile);
 
         return createResponse(user, savedProfile);
@@ -75,6 +83,7 @@ public class ProfileService {
                 profile.getProfilePhoto(),
                 profile.getGithubUsername(),
                 profile.getLeetcodeUsername(),
+                profile.getCodeforcesUsername(),
                 profile.getLinkedin(),
                 profile.getLocation()
         );

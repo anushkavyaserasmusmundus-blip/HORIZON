@@ -11,6 +11,7 @@ public class ProfileResponse {
     private String profilePhoto;
     private String githubUsername;
     private String leetcodeUsername;
+    private String codeforcesUsername;
     private String linkedin;
     private String location;
 
@@ -24,6 +25,7 @@ public class ProfileResponse {
             String profilePhoto,
             String githubUsername,
             String leetcodeUsername,
+            String codeforcesUsername,
             String linkedin,
             String location
     ) {
@@ -36,6 +38,7 @@ public class ProfileResponse {
         this.profilePhoto = profilePhoto;
         this.githubUsername = githubUsername;
         this.leetcodeUsername = leetcodeUsername;
+        this.codeforcesUsername = codeforcesUsername;
         this.linkedin = linkedin;
         this.location = location;
     }
@@ -75,6 +78,10 @@ public class ProfileResponse {
 
     public String getLeetcodeUsername() {
         return leetcodeUsername;
+    }
+
+    public String getCodeforcesUsername() {
+        return codeforcesUsername;
     }
 
     public String getLinkedin() {

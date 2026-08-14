@@ -32,6 +32,9 @@ public class Profile {
     @Column(name = "leetcode_username")
     private String leetcodeUsername;
 
+    @Column(name = "codeforces_username")
+    private String codeforcesUsername;
+
     private String linkedin;
 
     private String location;
@@ -90,6 +93,10 @@ public class Profile {
         return leetcodeUsername;
     }
 
+    public String getCodeforcesUsername() {
+        return codeforcesUsername;
+    }
+
     public String getLinkedin() {
         return linkedin;
     }
@@ -134,6 +141,10 @@ public class Profile {
 
     public void setLeetcodeUsername(String leetcodeUsername) {
         this.leetcodeUsername = leetcodeUsername;
+    }
+
+    public void setCodeforcesUsername(String codeforcesUsername) {
+        this.codeforcesUsername = codeforcesUsername;
     }
 
     public void setLinkedin(String linkedin) {
