@@ -45,6 +45,33 @@ public class Profile {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "current_company")
+    private String currentCompany;
+
+    @Column(name = "years_of_experience")
+    private Integer yearsOfExperience;
+
+    @Column(name = "availability_status")
+    private String availabilityStatus;
+
+    @Column(name = "primary_focus")
+    private String primaryFocus;
+
+    @Column(name = "skills_json", columnDefinition = "TEXT")
+    private String skillsJson;
+
+    @Column(name = "experience_json", columnDefinition = "TEXT")
+    private String experienceJson;
+
+    @Column(name = "education_json", columnDefinition = "TEXT")
+    private String educationJson;
+
+    @Column(name = "certifications_json", columnDefinition = "TEXT")
+    private String certificationsJson;
+
+    @Column(name = "projects_json", columnDefinition = "TEXT")
+    private String projectsJson;
+
     @OneToOne //relationship with User entity
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
@@ -117,6 +144,42 @@ public class Profile {
         return user;
     }
 
+    public String getCurrentCompany() {
+        return currentCompany;
+    }
+
+    public Integer getYearsOfExperience() {
+        return yearsOfExperience;
+    }
+
+    public String getAvailabilityStatus() {
+        return availabilityStatus;
+    }
+
+    public String getPrimaryFocus() {
+        return primaryFocus;
+    }
+
+    public String getSkillsJson() {
+        return skillsJson;
+    }
+
+    public String getExperienceJson() {
+        return experienceJson;
+    }
+
+    public String getEducationJson() {
+        return educationJson;
+    }
+
+    public String getCertificationsJson() {
+        return certificationsJson;
+    }
+
+    public String getProjectsJson() {
+        return projectsJson;
+    }
+
     // Setters
 
     public void setFullName(String fullName) {
@@ -157,5 +220,41 @@ public class Profile {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setCurrentCompany(String currentCompany) {
+        this.currentCompany = currentCompany;
+    }
+
+    public void setYearsOfExperience(Integer yearsOfExperience) {
+        this.yearsOfExperience = yearsOfExperience;
+    }
+
+    public void setAvailabilityStatus(String availabilityStatus) {
+        this.availabilityStatus = availabilityStatus;
+    }
+
+    public void setPrimaryFocus(String primaryFocus) {
+        this.primaryFocus = primaryFocus;
+    }
+
+    public void setSkillsJson(String skillsJson) {
+        this.skillsJson = skillsJson;
+    }
+
+    public void setExperienceJson(String experienceJson) {
+        this.experienceJson = experienceJson;
+    }
+
+    public void setEducationJson(String educationJson) {
+        this.educationJson = educationJson;
+    }
+
+    public void setCertificationsJson(String certificationsJson) {
+        this.certificationsJson = certificationsJson;
+    }
+
+    public void setProjectsJson(String projectsJson) {
+        this.projectsJson = projectsJson;
     }
 }

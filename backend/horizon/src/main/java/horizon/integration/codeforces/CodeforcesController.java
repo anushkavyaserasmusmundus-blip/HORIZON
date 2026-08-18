@@ -65,4 +65,24 @@ public class CodeforcesController {
 
         return codeforcesService.getSubmissions(username);
     }
+
+    @GetMapping("/stats")
+public CodeforcesStatsResponse getStats(Authentication authentication) {
+
+    User user = userRepository
+            .findByEmail(authentication.getName())
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    Profile profile = profileRepository
+            .findByUser(user)
+            .orElseThrow(() -> new RuntimeException("Profile not found"));
+
+    String username = profile.getCodeforcesUsername();
+
+    if (username == null || username.isBlank()) {
+        throw new RuntimeException("Codeforces username not configured");
+    }
+
+    return codeforcesService.getStats(username);
+}
 }

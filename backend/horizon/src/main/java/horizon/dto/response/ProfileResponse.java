@@ -1,5 +1,8 @@
 package horizon.dto.response;
 
+import java.util.List;
+import java.util.Map;
+
 public class ProfileResponse {
 
     private String username;
@@ -14,6 +17,15 @@ public class ProfileResponse {
     private String codeforcesUsername;
     private String linkedin;
     private String location;
+    private String currentCompany;
+    private Integer yearsOfExperience;
+    private String availabilityStatus;
+    private String primaryFocus;
+    private List<Map<String, Object>> skills;
+    private List<Map<String, Object>> experience;
+    private List<Map<String, Object>> education;
+    private List<Map<String, Object>> certifications;
+    private List<Map<String, Object>> projects;
 
     public ProfileResponse(
             String username,
@@ -27,7 +39,16 @@ public class ProfileResponse {
             String leetcodeUsername,
             String codeforcesUsername,
             String linkedin,
-            String location
+            String location,
+            String currentCompany,
+            Integer yearsOfExperience,
+            String availabilityStatus,
+            String primaryFocus,
+            List<Map<String, Object>> skills,
+            List<Map<String, Object>> experience,
+            List<Map<String, Object>> education,
+            List<Map<String, Object>> certifications,
+            List<Map<String, Object>> projects
     ) {
         this.username = username;
         this.email = email;
@@ -41,6 +62,15 @@ public class ProfileResponse {
         this.codeforcesUsername = codeforcesUsername;
         this.linkedin = linkedin;
         this.location = location;
+        this.currentCompany = currentCompany;
+        this.yearsOfExperience = yearsOfExperience;
+        this.availabilityStatus = availabilityStatus;
+        this.primaryFocus = primaryFocus;
+        this.skills = skills;
+        this.experience = experience;
+        this.education = education;
+        this.certifications = certifications;
+        this.projects = projects;
     }
 
     // Getters
@@ -91,4 +121,14 @@ public class ProfileResponse {
     public String getLocation() {
         return location;
     }
+
+    public String getCurrentCompany() { return currentCompany; }
+    public Integer getYearsOfExperience() { return yearsOfExperience; }
+    public String getAvailabilityStatus() { return availabilityStatus; }
+    public String getPrimaryFocus() { return primaryFocus; }
+    public List<Map<String, Object>> getSkills() { return skills; }
+    public List<Map<String, Object>> getExperience() { return experience; }
+    public List<Map<String, Object>> getEducation() { return education; }
+    public List<Map<String, Object>> getCertifications() { return certifications; }
+    public List<Map<String, Object>> getProjects() { return projects; }
 }
