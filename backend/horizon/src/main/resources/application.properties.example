@@ -1,0 +1,14 @@
+spring.datasource.url=jdbc:postgresql://localhost:5432/horizon_db
+spring.datasource.username=postgres
+spring.datasource.password=changeme
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+server.port=8081
+
+# generate your own base64 secret, e.g. via: openssl rand -base64 32
+jwt.secret=changeme
+
+# GitHub personal access token used for GitHub integration features
+github.token=changeme

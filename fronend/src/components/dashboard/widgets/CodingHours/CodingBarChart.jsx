@@ -9,25 +9,7 @@ import {
   Cell,
 } from "recharts";
 
-const platformData = [
-  {
-    name: "LeetCode",
-    solved: 180,
-    color: "#FFA116",
-  },
-  {
-    name: "Codeforces",
-    solved: 92,
-    color: "#3B82F6",
-  },
-  {
-    name: "HackerRank",
-    solved: 70,
-    color: "#22C55E",
-  },
-];
-
-export default function CodingBarChart() {
+export default function CodingBarChart({ platformData }) {
   return (
     <div className="mt-4 h-44 w-full">
       <ResponsiveContainer width="100%" height="100%">

@@ -58,21 +58,29 @@ function DashboardLayout({ children }) {
     );
 
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden">
+    <div className="min-h-screen overflow-hidden bg-[#FFF4E6]">
 
-      <TopNavbar
-        onOpenNotifications={() => setShowNotifications(true)}
-        streakCount={streakCount}
-      />
+      {/* Fixed Top Navbar */}
+      <div className="fixed left-0 right-0 top-0 z-40">
+        <TopNavbar
+          onOpenNotifications={() => setShowNotifications(true)}
+          streakCount={streakCount}
+        />
+      </div>
 
-      <div className="flex min-h-0 flex-1 overflow-hidden">
+      {/* Fixed Sidebar + Scrollable Content */}
+      <div className="flex min-h-screen">
+
         <Sidebar />
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden lg:pl-56">
-          <main className="flex-1 overflow-y-auto bg-[#FFF4E6] p-5" style={{ height: "calc(100vh - 5rem)" }}>
+
+        <div className="flex min-w-0 flex-1 flex-col lg:pl-56">
+          <main className="mt-20 h-[calc(100vh-5rem)] flex-1 overflow-y-auto bg-[#FFF4E6] p-5">
             {children}
+
             <Footer className="mx-auto mt-10 max-w-[1100px] border-t border-[#F7B39B] py-5" />
           </main>
         </div>
+
       </div>
 
       {showNotifications ? (

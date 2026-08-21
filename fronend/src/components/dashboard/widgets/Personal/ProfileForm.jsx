@@ -40,6 +40,9 @@ export default function ProfileForm({ onSave }) {
       yearsOfExperience: profile.yearsOfExperience === "" ? null : Number(profile.yearsOfExperience),
       availabilityStatus: profile.availabilityStatus,
       primaryFocus: profile.primaryFocus,
+      githubUsername: profile.githubUsername,
+      leetcodeUsername: profile.leetcodeUsername,
+      codeforcesUsername: profile.codeforcesUsername,
     });
   }
 

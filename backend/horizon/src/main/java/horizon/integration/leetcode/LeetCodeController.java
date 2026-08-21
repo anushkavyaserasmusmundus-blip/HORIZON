@@ -38,7 +38,7 @@ public class LeetCodeController {
                 .orElseThrow(() -> new RuntimeException("Profile not found"));
 
         String username = profile.getLeetcodeUsername();
-
+        System.out.println("LEETCODE USERNAME: [" + username + "]");
         if (username == null || username.isBlank()) {
             throw new RuntimeException("LeetCode username not configured");
         }

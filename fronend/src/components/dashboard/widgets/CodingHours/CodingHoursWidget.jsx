@@ -1,26 +1,89 @@
+import { useEffect, useState } from "react";
 import Card from "../../../common/Card";
 import CodingBarChart from "./CodingBarChart";
 import { SiLeetcode } from "react-icons/si";
 
-const platforms = [
-  {
-    name: "LeetCode",
-    count: 180,
-    color: "#FFA116",
-  },
-  {
-    name: "Codeforces",
-    count: 92,
-    color: "#3B82F6",
-  },
-  {
-    name: "HackerRank",
-    count: 70,
-    color: "#22C55E",
-  },
-];
+const LEETCODE_API =
+  "http://127.0.0.1:8081/api/v1/integrations/leetcode";
+
+const CODEFORCES_API =
+  "http://127.0.0.1:8081/api/v1/integrations/codeforces/stats";
+
+const platformColors = {
+  LeetCode: "#FFA116",
+  Codeforces: "#3B82F6",
+};
 
 export default function CodingHoursWidget() {
+  const [leetcodeCount, setLeetcodeCount] = useState(0);
+  const [codeforcesCount, setCodeforcesCount] = useState(0);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchCodingStats() {
+      try {
+        const token = localStorage.getItem("token");
+
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+
+        const [leetcodeResponse, codeforcesResponse] =
+          await Promise.all([
+            fetch(LEETCODE_API, { headers }),
+            fetch(CODEFORCES_API, { headers }),
+          ]);
+
+        if (!leetcodeResponse.ok || !codeforcesResponse.ok) {
+          throw new Error("Failed to fetch coding statistics");
+        }
+
+        const leetcodeData = await leetcodeResponse.json();
+        const codeforcesData = await codeforcesResponse.json();
+
+        const leetcodeStats =
+          leetcodeData?.data?.matchedUser?.submitStats?.acSubmissionNum;
+
+        const leetcodeAll =
+          leetcodeStats?.find(
+            (item) => item.difficulty === "All"
+          );
+
+        const codeforcesSolved =
+          codeforcesData?.solvedProblems ??
+          codeforcesData?.solved ??
+          0;
+
+        setLeetcodeCount(leetcodeAll?.count ?? 0);
+        setCodeforcesCount(codeforcesSolved);
+      } catch (err) {
+        console.error("Coding statistics error:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchCodingStats();
+  }, []);
+
+  const platformData = [
+    {
+      name: "LeetCode",
+      solved: leetcodeCount,
+      color: platformColors.LeetCode,
+    },
+    {
+      name: "Codeforces",
+      solved: codeforcesCount,
+      color: platformColors.Codeforces,
+    },
+  ];
+
+  const totalProblems = leetcodeCount + codeforcesCount;
+
   return (
     <Card
       title="Coding Activity"
@@ -37,7 +100,17 @@ export default function CodingHoursWidget() {
             </p>
           </div>
 
-          <CodingBarChart />
+          {loading ? (
+            <div className="flex h-44 items-center justify-center text-sm text-[#8A7260]">
+              Loading coding statistics...
+            </div>
+          ) : error ? (
+            <div className="flex h-44 items-center justify-center text-sm text-red-500">
+              Failed to load coding statistics
+            </div>
+          ) : (
+            <CodingBarChart platformData={platformData} />
+          )}
 
         </div>
 
@@ -59,7 +132,7 @@ export default function CodingHoursWidget() {
                 </p>
 
                 <p className="mt-0.5 text-4xl font-bold text-[#2D4C59]">
-                  342
+                  {loading ? "—" : totalProblems}
                 </p>
 
                 <p className="text-xs text-[#8A7260]">
@@ -83,25 +156,22 @@ export default function CodingHoursWidget() {
               Platform Breakdown
             </p>
 
-            {platforms.map((platform) => (
+            {platformData.map((platform) => (
 
               <div
                 key={platform.name}
                 className="flex min-w-0 w-full items-center rounded-xl bg-white px-3 py-2 shadow-sm"
               >
 
-                {/* Platform color */}
                 <span
                   className="mr-2 h-2.5 w-2.5 shrink-0 rounded-full"
                   style={{ backgroundColor: platform.color }}
                 />
 
-                {/* Platform name */}
                 <span className="min-w-0 flex-1 truncate text-sm font-semibold text-[#2D4C59]">
                   {platform.name}
                 </span>
 
-                {/* Count */}
                 <span
                   className="ml-2 shrink-0 rounded-full px-2.5 py-0.5 text-sm font-bold"
                   style={{
@@ -109,7 +179,7 @@ export default function CodingHoursWidget() {
                     color: platform.color,
                   }}
                 >
-                  {platform.count}
+                  {loading ? "—" : platform.solved}
                 </span>
 
               </div>
