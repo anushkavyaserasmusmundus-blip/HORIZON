@@ -1,9 +1,26 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Pencil } from "lucide-react";
+import { AuthContext } from "../../../../context/AuthContext";
 import { mockProfile } from "./mockProfile";
 
 export default function ProfileForm({ onSave }) {
-  const [profile, setProfile] = useState(mockProfile);
+  const { user } = useContext(AuthContext);
+  
+  // Map backend fields to form fields
+  const initialData = user ? {
+    name: user.fullName || user.username || "",
+    username: user.username || "",
+    designation: user.designation || "",
+    bio: user.bio || "",
+    image: user.profilePhoto || "",
+    location: user.location || "",
+    currentCompany: user.currentCompany || "",
+    yearsOfExperience: user.yearsOfExperience ?? "",
+    availabilityStatus: user.availabilityStatus || "",
+    primaryFocus: user.primaryFocus || "",
+  } : mockProfile;
+
+  const [profile, setProfile] = useState(initialData);
   const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(profile.image || "");
 
@@ -13,10 +30,17 @@ export default function ProfileForm({ onSave }) {
 
   function handleSave(e) {
     e.preventDefault();
-    // persist into mockProfile so other components can pick it up
-    Object.assign(mockProfile, profile, { image: previewUrl });
-    window.dispatchEvent(new CustomEvent("profile-updated"));
-    if (onSave) onSave(profile);
+    if (onSave) onSave({
+      fullName: profile.name,
+      designation: profile.designation,
+      bio: profile.bio,
+      profilePhoto: profile.image,
+      location: profile.location,
+      currentCompany: profile.currentCompany,
+      yearsOfExperience: profile.yearsOfExperience === "" ? null : Number(profile.yearsOfExperience),
+      availabilityStatus: profile.availabilityStatus,
+      primaryFocus: profile.primaryFocus,
+    });
   }
 
   function handleFileInput(file) {
@@ -38,10 +62,9 @@ export default function ProfileForm({ onSave }) {
         <div className="relative flex h-20 w-20 items-center">
           <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-[#F4B643] bg-[#FFF8EF]">
             {previewUrl ? (
-              // eslint-disable-next-line jsx-a11y/img-redundant-alt
               <img src={previewUrl} alt={profile.name} className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-20 w-20 items-center justify-center bg-[#F4B643] text-2xl font-semibold text-[#2D4C59]">{profile.name.charAt(0)}</div>
+              <div className="flex h-20 w-20 items-center justify-center bg-[#F4B643] text-2xl font-semibold text-[#2D4C59]">{profile.name?.charAt(0).toUpperCase()}</div>
             )}
           </div>
 
@@ -52,13 +75,27 @@ export default function ProfileForm({ onSave }) {
 
         <div className="flex-1">
           <label className="text-sm font-semibold text-[#2D4C59]">Name</label>
-          <input value={profile.name} onChange={(e) => updateField("name", e.target.value)} className="mt-1 w-full rounded-md border border-[#E8DCCF] p-2" />
+          <input value={profile.name || ""} onChange={(e) => updateField("name", e.target.value)} className="mt-1 w-full rounded-md border border-[#E8DCCF] p-2" />
 
           <label className="mt-3 text-sm font-semibold text-[#2D4C59]">Designation</label>
-          <input value={profile.designation} onChange={(e) => updateField("designation", e.target.value)} className="mt-1 w-full rounded-md border border-[#E8DCCF] p-2" />
+          <input value={profile.designation || ""} onChange={(e) => updateField("designation", e.target.value)} className="mt-1 w-full rounded-md border border-[#E8DCCF] p-2" />
 
           <label className="mt-3 text-sm font-semibold text-[#2D4C59]">Bio</label>
-          <textarea value={profile.bio} onChange={(e) => updateField("bio", e.target.value)} className="mt-1 w-full rounded-md border border-[#E8DCCF] p-2" />
+          <textarea value={profile.bio || ""} onChange={(e) => updateField("bio", e.target.value)} className="mt-1 w-full rounded-md border border-[#E8DCCF] p-2" />
+
+          <label className="mt-3 text-sm font-semibold text-[#2D4C59]">Location</label>
+          <input value={profile.location || ""} onChange={(e) => updateField("location", e.target.value)} className="mt-1 w-full rounded-md border border-[#E8DCCF] p-2" />
+
+          <label className="mt-3 text-sm font-semibold text-[#2D4C59]">Current company</label>
+          <input value={profile.currentCompany || ""} onChange={(e) => updateField("currentCompany", e.target.value)} className="mt-1 w-full rounded-md border border-[#E8DCCF] p-2" />
+
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <label className="text-sm font-semibold text-[#2D4C59]">Years of experience<input type="number" min="0" value={profile.yearsOfExperience} onChange={(e) => updateField("yearsOfExperience", e.target.value)} className="mt-1 w-full rounded-md border border-[#E8DCCF] p-2" /></label>
+            <label className="text-sm font-semibold text-[#2D4C59]">Availability<input value={profile.availabilityStatus || ""} onChange={(e) => updateField("availabilityStatus", e.target.value)} className="mt-1 w-full rounded-md border border-[#E8DCCF] p-2" /></label>
+          </div>
+
+          <label className="mt-3 text-sm font-semibold text-[#2D4C59]">Primary technical focus</label>
+          <input value={profile.primaryFocus || ""} onChange={(e) => updateField("primaryFocus", e.target.value)} className="mt-1 w-full rounded-md border border-[#E8DCCF] p-2" />
 
           {/* hide direct path input in favor of photo modal */}
 

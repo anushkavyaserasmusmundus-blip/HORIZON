@@ -1,24 +1,33 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import TopNavbar from "./TopNavbar";
+import Footer from "./Footer";
 import NotificationsModal from "./NotificationsModal";
+import ProfileSetupModal from "../profile/ProfileSetupModal";
+import { AuthContext } from "../../context/AuthContext";
 
-
-function DashboardLayout({children}){
+function DashboardLayout({ children }) {
+  const { user, loading, updateUserProfile } = useContext(AuthContext);
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [streakCount, setStreakCount] = useState(14);
   const [showStreakCelebration, setShowStreakCelebration] = useState(false);
 
   useEffect(() => {
+    if (!user?.username) return;
+
+    const streakKey = `dailyStreakCount_${user.username}`;
+    const dateKey = `lastStreakDate_${user.username}`;
     const today = new Date().toISOString().slice(0, 10);
-    const savedCount = parseInt(localStorage.getItem("dailyStreakCount") ?? "14", 10);
-    const lastDate = localStorage.getItem("lastStreakDate");
+    const savedCount = parseInt(localStorage.getItem(streakKey) ?? "0", 10);
+    const lastDate = localStorage.getItem(dateKey);
 
     if (lastDate !== today) {
       const updatedCount = savedCount + 1;
-      localStorage.setItem("dailyStreakCount", String(updatedCount));
-      localStorage.setItem("lastStreakDate", today);
+
+      localStorage.setItem(streakKey, String(updatedCount));
+      localStorage.setItem(dateKey, today);
+
       setStreakCount(updatedCount);
 
       const showTimer = window.setTimeout(() => {
@@ -36,56 +45,79 @@ function DashboardLayout({children}){
     }
 
     setStreakCount(savedCount);
-  }, []);
+  }, [user]);
 
+  const needsProfileSetup =
+    !loading &&
+    user &&
+    (
+        !user.fullName?.trim() ||
+        !user.githubUsername?.trim() ||
+        !user.codeforcesUsername?.trim() ||
+        !user.leetcodeUsername?.trim()
+    );
 
-return(
+  return (
+    <div className="min-h-screen flex flex-col overflow-hidden">
 
-<div className="min-h-screen flex flex-col overflow-hidden">
+      <TopNavbar
+        onOpenNotifications={() => setShowNotifications(true)}
+        streakCount={streakCount}
+      />
 
-<TopNavbar onOpenNotifications={() => setShowNotifications(true)} streakCount={streakCount} />
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        <Sidebar />
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden lg:pl-56">
+          <main className="flex-1 overflow-y-auto bg-[#FFF4E6] p-5" style={{ height: "calc(100vh - 5rem)" }}>
+            {children}
+            <Footer className="mx-auto mt-10 max-w-[1100px] border-t border-[#F7B39B] py-5" />
+          </main>
+        </div>
+      </div>
 
-<div className="flex flex-1 overflow-hidden">
+      {showNotifications ? (
+        <NotificationsModal
+          onClose={() => setShowNotifications(false)}
+        />
+      ) : null}
 
-<Sidebar/>
+      {showStreakCelebration ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#16a34a]/80 p-6 text-center text-white backdrop-blur-sm">
 
-<div className="flex-1 overflow-hidden">
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="firecracker absolute left-10 top-16" />
+            <div className="firecracker absolute right-10 top-20" />
+            <div className="firecracker absolute left-1/3 bottom-16" />
+            <div className="firecracker absolute right-1/3 bottom-24" />
+            <div className="firecracker absolute left-1/2 top-1/2" />
+          </div>
 
-<main className="flex-1 overflow-y-auto p-5 bg-[#FBE7CC]" style={{ height: 'calc(100vh - 4rem)' }}>
-  {children}
-</main>
+          <div className="relative mx-auto max-w-2xl rounded-[2rem] border border-white/30 bg-white/15 px-8 py-10 shadow-2xl backdrop-blur-md animate-streak-pop">
 
+            <div className="mb-6 text-5xl font-bold">
+              Streak Boost!
+            </div>
 
-</div>
+            <p className="mb-4 text-xl">
+              Your streak just grew by 1 day.
+            </p>
 
+            <p className="text-3xl font-semibold">
+              {streakCount} day streak
+            </p>
 
-</div>
+          </div>
+        </div>
+      ) : null}
 
-{showNotifications ? <NotificationsModal onClose={() => setShowNotifications(false)} /> : null}
+      {needsProfileSetup ? (
+        <ProfileSetupModal
+          onSave={updateUserProfile}
+        />
+      ) : null}
 
-{showStreakCelebration ? (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#16a34a]/80 p-6 text-center text-white backdrop-blur-sm">
-    <div className="absolute inset-0 overflow-hidden">
-      <div className="firecracker absolute left-10 top-16" />
-      <div className="firecracker absolute right-10 top-20" />
-      <div className="firecracker absolute left-1/3 bottom-16" />
-      <div className="firecracker absolute right-1/3 bottom-24" />
-      <div className="firecracker absolute left-1/2 top-1/2" />
     </div>
-    <div className="relative mx-auto max-w-2xl rounded-[2rem] border border-white/30 bg-white/15 px-8 py-10 shadow-2xl backdrop-blur-md animate-streak-pop">
-      <div className="mb-6 text-5xl font-bold">Streak Boost!</div>
-      <p className="mb-4 text-xl">Your streak just grew by 1 day.</p>
-      <p className="text-3xl font-semibold">{streakCount} day streak</p>
-    </div>
-  </div>
-) : null}
-
-</div>
-
-
-)
-
+  );
 }
-
 
 export default DashboardLayout;

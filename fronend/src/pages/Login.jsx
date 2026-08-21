@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useContext } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { loginUser } from "../services/authService";
+import { AuthContext } from "../context/AuthContext";
+import Footer from "../components/layout/Footer";
 
 import backgroundImage from "../assets/images/download.jfif";
 
@@ -8,6 +10,8 @@ import backgroundImage from "../assets/images/download.jfif";
 function Login() {
 
     const navigate = useNavigate();
+    const location = useLocation();
+    const { login } = useContext(AuthContext);
 
     const [credentials, setCredentials] = useState({
         email: "",
@@ -37,14 +41,11 @@ function Login() {
 
             const data = await loginUser(credentials);
 
-            localStorage.setItem(
-                "token",
-                data.token
-            );
+            login(data.token);
 
             navigate("/");
 
-        } catch(err) {
+        } catch {
 
             setError("Invalid email or password");
 
@@ -260,6 +261,12 @@ function Login() {
 
 
 
+                        {location.state?.registered && (
+                            <p className="mb-4 rounded-xl bg-green-50 px-4 py-3 text-sm font-medium text-green-700 border border-green-200">
+                                You are now registered, please login.
+                            </p>
+                        )}
+
                         {
                             error &&
 
@@ -445,8 +452,7 @@ function Login() {
 
             </div>
 
-
-
+            <Footer className="absolute bottom-4 left-1/2 -translate-x-1/2" />
         </div>
 
 

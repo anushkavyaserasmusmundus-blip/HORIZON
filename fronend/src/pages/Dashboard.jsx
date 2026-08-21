@@ -3,43 +3,34 @@ import DashboardLayout from "../components/layout/DashboardLayout";
 import CodingHoursWidget from "../components/dashboard/widgets/CodingHours/CodingHoursWidget";
 import CodingContributionHeatmap from "../components/dashboard/widgets/CodingHours/CodingContributionHeatmap";
 import PersonalWidget from "../components/dashboard/widgets/Personal/PersonalWidget";
-import HealthWidget from "../components/dashboard/widgets/HealthAnalysis/HealthWidget";
-import TodaysMissionWidget from "../components/dashboard/widgets/TodaysMission/TodaysMissionWidget";
-
-const focusItems = ["Finish the UI polish", "Complete one focused coding sprint", "Log your reflection before dinner"];
 
 export default function Dashboard() {
   return (
     <DashboardLayout>
       <div className="mx-auto w-full max-w-[1500px] space-y-5">
         <div className="grid grid-cols-12 gap-4 lg:gap-5">
-          <div className="col-span-12 min-h-[250px] sm:col-span-6 lg:col-span-4">
-            <TodaysMissionWidget />
-          </div>
 
-          <div className="col-span-12 min-h-[250px] sm:col-span-6 lg:col-span-4">
+          {/* Row 1: Coding Activity (wide) + GitHub Heatmap */}
+          <div className="col-span-12 min-h-[300px] lg:col-span-8">
             <CodingHoursWidget />
           </div>
 
-          <div className="col-span-12 min-h-[250px] sm:col-span-6 lg:col-span-4">
+          <div className="col-span-12 min-h-[300px] lg:col-span-4">
             <div className="flex h-full flex-col rounded-2xl border border-[#E8DCCF] bg-white p-5">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#C84D38]">Activity Overview</p>
-              <div className="mt-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#C84D38]">GitHub Contributions</p>
+              <div className="mt-3 flex-1">
                 <CodingContributionHeatmap />
               </div>
             </div>
           </div>
 
-          <div className="col-span-12 min-h-[300px] sm:col-span-6 lg:col-span-8">
+          {/* Row 2: Personal */}
+          <div className="col-span-12 min-h-[300px]">
             <PersonalWidget />
           </div>
 
-          <div className="col-span-12 min-h-[300px] sm:col-span-6 lg:col-span-4">
-            <HealthWidget />
-          </div>
-
-
-          <div className="col-span-12 min-h-[280px] sm:col-span-6 lg:col-span-5">
+          {/* Row 3: AI Assistant */}
+          <div className="col-span-12 min-h-[200px] lg:col-span-5">
             <div className="flex h-full flex-col rounded-2xl border border-[#E8DCCF] bg-white p-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#C84D38]">AI Assistant</p>
               <h2 className="mt-2 text-xl font-semibold text-[#2D4C59]">Ready to guide your next step</h2>
@@ -56,9 +47,10 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+
         </div>
       </div>
-    
+
     </DashboardLayout>
   );
 }

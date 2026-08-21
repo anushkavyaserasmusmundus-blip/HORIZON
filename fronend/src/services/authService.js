@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8081/api/v1/auth";
+const API_BASE = "http://127.0.0.1:8081/api/v1/auth";
 
 export async function loginUser(credentials) {
     const response = await fetch(`${API_BASE}/login`, {
@@ -14,9 +14,6 @@ export async function loginUser(credentials) {
     }
 
     const data = await response.json();
-
-    // Store JWT token
-    localStorage.setItem("token", data.token);
 
     return data;
 }

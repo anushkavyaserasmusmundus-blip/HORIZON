@@ -3,8 +3,7 @@ import { useState } from "react";
 export default function NotificationsModal({ onClose }) {
   const [notifications, setNotifications] = useState([
     { id: 1, title: "Daily check-in available", message: "Record your mood and activity for today." },
-    { id: 2, title: "Health analysis updated", message: "Your menstrual phase tracker has new insights." },
-    { id: 3, title: "New skill suggestion", message: "Consider adding TypeScript to your skill matrix." },
+    { id: 2, title: "New skill suggestion", message: "Consider adding TypeScript to your skill matrix." },
   ]);
 
   const handleClearAll = () => setNotifications([]);

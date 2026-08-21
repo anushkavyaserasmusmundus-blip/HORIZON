@@ -1,4 +1,6 @@
+import { useContext, useMemo } from "react";
 import { FaGithub, FaInstagram, FaLinkedin, FaTwitter, FaGlobe, FaFileDownload } from "react-icons/fa";
+import { AuthContext } from "../../../../context/AuthContext";
 import { mockSocialLinks } from "./mockProfile";
 
 const iconMap = {
@@ -10,11 +12,38 @@ const iconMap = {
 };
 
 export default function SocialLinks() {
+  const { user } = useContext(AuthContext);
+
+  // Build social links from user data or use mock
+  const socialLinks = useMemo(() => {
+    if (!user) return mockSocialLinks;
+
+    const links = [];
+    
+    if (user.linkedin) {
+      links.push({
+        platform: "LinkedIn",
+        url: user.linkedin.startsWith("http") ? user.linkedin : `https://linkedin.com/in/${user.linkedin}`,
+        icon: "Linkedin"
+      });
+    }
+    
+    if (user.githubUsername) {
+      links.push({
+        platform: "GitHub",
+        url: `https://github.com/${user.githubUsername}`,
+        icon: "Github"
+      });
+    }
+
+    return links.length > 0 ? links : mockSocialLinks;
+  }, [user]);
+
   return (
     <div className="rounded-3xl border border-[#F2D5A5] bg-[#FFFDF8] p-4">
       <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#C84D38]">Connect</p>
       <div className="mt-4 grid grid-cols-5 gap-3">
-        {mockSocialLinks.map((link) => {
+        {socialLinks.map((link) => {
           const Icon = iconMap[link.icon] || FaGlobe;
 
           return (

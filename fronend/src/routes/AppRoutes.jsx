@@ -3,8 +3,8 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 import Dashboard from "../pages/Dashboard";
+import Home from "../pages/Home";
 import Profile from "../pages/Profile";
-import HealthAnalysis from "../pages/HealthAnalysis";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 
@@ -33,17 +33,22 @@ function AppRoutes() {
 
         <Route 
           path="/" 
+          element={<ProtectedRoute><Navigate to="/home" replace /></ProtectedRoute>} 
+        />
+
+        <Route 
+          path="/dashboard" 
           element={<ProtectedRoute><Dashboard /></ProtectedRoute>} 
+        />
+
+        <Route 
+          path="/home" 
+          element={<ProtectedRoute><Home /></ProtectedRoute>} 
         />
 
         <Route 
           path="/profile" 
           element={<ProtectedRoute><Profile /></ProtectedRoute>} 
-        />
-
-        <Route 
-          path="/health-analysis" 
-          element={<ProtectedRoute><HealthAnalysis /></ProtectedRoute>} 
         />
 
         <Route 

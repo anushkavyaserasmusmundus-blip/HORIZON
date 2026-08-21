@@ -2,6 +2,7 @@ import { useState } from "react";
 import { registerUser } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "../assets/images/download.jfif";
+import Footer from "../components/layout/Footer";
 
 function Register() {
 
@@ -26,8 +27,8 @@ function Register() {
         e.preventDefault();
         try {
             await registerUser(formData);
-            navigate("/login");
-        } catch (err) {
+            navigate("/login", { state: { registered: true } });
+        } catch {
             setError("Registration failed");
         }
     };
@@ -306,6 +307,7 @@ function Register() {
 
             </div>
 
+            <Footer className="absolute bottom-4 left-1/2 -translate-x-1/2" />
         </div>
 
     );

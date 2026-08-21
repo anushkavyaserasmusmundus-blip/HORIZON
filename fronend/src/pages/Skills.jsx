@@ -12,7 +12,7 @@ export default function Skills() {
             A full view of all your skills and progress. Starred skills remain visible on the dashboard.
           </p>
           <div className="mt-5">
-            <SkillMatrix showAll={true} />
+            <SkillMatrix showAll={true} allowEdit={true} />
           </div>
         </div>
       </div>
