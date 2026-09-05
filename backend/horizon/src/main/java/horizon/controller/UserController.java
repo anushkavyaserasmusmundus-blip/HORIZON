@@ -19,7 +19,7 @@ public class UserController {
 
     @GetMapping
     public List<UserResponse> getUsers() {
-
+       //hashing the password
         return userService.getAllUsers()
                 .stream()
                 .map(user -> {
