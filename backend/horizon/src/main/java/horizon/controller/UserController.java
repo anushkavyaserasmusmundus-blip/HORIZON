@@ -1,5 +1,6 @@
 package horizon.controller;
 
+import horizon.dto.response.UserResponse;
 import horizon.entity.User;
 import horizon.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,20 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getUsers() {
-        return userService.getAllUsers();
+    public List<UserResponse> getUsers() {
+
+        return userService.getAllUsers()
+                .stream()
+                .map(user -> {
+                    UserResponse response = new UserResponse();
+
+                    response.setId(user.getId());
+                    response.setUsername(user.getUsername());
+                    response.setEmail(user.getEmail());
+                    response.setRole(user.getRole());
+
+                    return response;
+                })
+                .toList();
     }
 }
