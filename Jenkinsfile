@@ -21,5 +21,13 @@ pipeline {
                 }
             }
         }
+
+        stage('Docker Build') {
+            steps {
+                dir('backend/horizon') {
+                    bat 'docker build -t horizon/backend:latest .'
+                }
+            }
+        }
     }
 }
