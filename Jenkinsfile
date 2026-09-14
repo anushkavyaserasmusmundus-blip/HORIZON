@@ -24,6 +24,14 @@ pipeline {
             }
         }
 
+        stage('Docker Compose Config Check') {
+            steps {
+                dir('backend/horizon') {
+                    bat 'docker compose config'
+                }
+            }
+        }
+
         stage('Docker Compose Build') {
             steps {
                 dir('backend/horizon') {
