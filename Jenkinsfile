@@ -39,6 +39,14 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy') {
+            steps {
+                dir('backend/horizon') {
+                    bat 'docker compose up -d'
+                }
+            }
+        }
     }
 }
 /*  github
