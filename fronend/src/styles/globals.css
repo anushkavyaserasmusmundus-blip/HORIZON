@@ -85,10 +85,9 @@ body {
 }
 
 @keyframes streakPop {
-  0% { opacity: 0; transform: scale(0.8); }
-  25% { opacity: 1; transform: scale(1.2); }
-  50% { transform: scale(1.05); }
-  100% { opacity: 1; transform: scale(1); }
+  0% { opacity: 0; transform: translateY(12px); }
+  65% { opacity: 1; transform: translateY(-2px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 .firecracker {
@@ -144,9 +143,21 @@ body {
 
 .home-calendar .react-calendar__tile {
   position: relative;
+  min-height: 3.1rem;
   border-radius: 0.5rem;
-  padding: 0.5rem 0.25rem;
-  color: var(--text);
+  padding: 0.25rem 0.25rem 0.75rem;
+  color: #3c4043;
+}
+
+.home-calendar .react-calendar__tile abbr {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  height: 1.75rem;
+  width: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
 
 .home-calendar .react-calendar__tile:enabled:hover,
@@ -154,23 +165,165 @@ body {
   background: #fff3cc;
 }
 
-.home-calendar .react-calendar__tile.home-calendar-active,
-.home-calendar .react-calendar__tile.home-calendar-active:enabled:hover,
-.home-calendar .react-calendar__tile.home-calendar-active:enabled:focus {
-  background: #ffb800;
-  color: #2d4c59;
-  font-weight: 700;
+.home-calendar .react-calendar__tile.home-calendar-selected,
+.home-calendar .react-calendar__tile.home-calendar-selected:enabled:hover,
+.home-calendar .react-calendar__tile.home-calendar-selected:enabled:focus,
+.home-calendar .react-calendar__tile.home-calendar-today:not(.home-calendar-selected) {
+  background: transparent;
+  font-weight: 600;
 }
 
-.home-calendar-dot {
+.home-calendar .react-calendar__tile.home-calendar-selected::before {
   position: absolute;
-  bottom: 0.25rem;
+  top: 0.25rem;
   left: 50%;
+  height: 1.75rem;
+  width: 1.75rem;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
+.home-calendar .react-calendar__tile.home-calendar-selected::before {
+  background: #1a73e8;
+}
+
+.home-calendar .react-calendar__tile.home-calendar-selected abbr {
+  color: #fff;
+}
+
+.home-calendar .react-calendar__tile.home-calendar-today:not(.home-calendar-selected) abbr {
+  color: #1a73e8;
+}
+
+.home-calendar-hover-scribble {
+  position: absolute;
+  top: 0.25rem;
+  left: 50%;
+  z-index: 3;
+  display: grid;
+  height: 1.75rem;
+  width: 1.75rem;
+  transform: translateX(-50%);
+  place-items: center;
+  color: transparent;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.scribble-hover-target {
+  display: inline-flex;
+}
+
+.scribble-inline {
+  display: inline-block;
+}
+
+.home-landing-scroll {
+  background-color: #FDF6E9;
+  background-image: radial-gradient(rgba(158, 43, 37, 0.045) 0.65px, transparent 0.65px);
+  background-size: 9px 9px;
+  padding: 0;
+  scroll-behavior: smooth;
+}
+
+.home-paper {
+  overflow: hidden;
+  background-color: #FDF6E9;
+}
+
+.home-landing-width {
+  width: min(100%, 1200px);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+.home-doodle-arrow path {
+  animation: doodleTrace 1.3s ease-in-out both;
+}
+
+.scribble-annotation-anchor {
+  position: relative;
+}
+
+.home-story-circle {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.snapshot-corner-fold {
+  z-index: 2;
+  height: 1.4rem;
+  width: 1.4rem;
+  transform-origin: top right;
+  background: #F1DFC7;
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  filter: drop-shadow(-1px 2px 2px rgba(26, 30, 50, 0.16));
+  animation: snapshotPeel 0.7s ease-in-out both;
+}
+
+.share-sticky-note::after {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  height: 0.9rem;
+  width: 0.9rem;
+  border-bottom-left-radius: 0.25rem;
+  background: linear-gradient(225deg, #E07A5F 0 48%, #FDF6E9 50% 100%);
+  box-shadow: -1px 1px 1px rgba(26, 30, 50, 0.12);
+  content: "";
+  pointer-events: none;
+}
+
+.dashboard-snapshot-root {
+  background: #FDF6E9;
+}
+
+.dashboard-snapshot-root .snapshot-only {
+  display: none;
+}
+
+@keyframes snapshotPeel {
+  from { opacity: 0; transform: rotate(-14deg) scale(0.65); }
+  to { opacity: 1; transform: rotate(0) scale(1); }
+}
+
+@keyframes doodleTrace {
+  from { stroke-dashoffset: 100; opacity: 0.35; }
+  to { stroke-dashoffset: 0; opacity: 1; }
+}
+
+@media (min-width: 640px) {
+  .home-landing-width { padding-inline: 2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-doodle-arrow path { animation: none; }
+  .home-landing-scroll { scroll-behavior: auto; }
+}
+
+.home-calendar-markers {
+  position: absolute;
+  bottom: 0.2rem;
+  left: 50%;
+  display: flex;
+  gap: 0.15rem;
+  transform: translateX(-50%);
+}
+
+.home-calendar-markers i {
   height: 0.25rem;
   width: 0.25rem;
-  transform: translateX(-50%);
   border-radius: 9999px;
-  background: #ffb800;
+}
+
+.home-calendar-event-marker {
+  background: #f4512a;
+}
+
+.home-calendar-task-marker {
+  background: #368a65;
 }
 
 .home-story-shape {

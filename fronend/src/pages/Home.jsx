@@ -1,117 +1,183 @@
-import { useState } from "react";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
-import { CalendarDays, Check, Plus, Trash2, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowDown, ArrowRight, Sparkles } from "lucide-react";
+import { motion, useInView } from "framer-motion";
+import { RoughNotation, RoughNotationGroup } from "react-rough-notation";
 import DashboardLayout from "../components/layout/DashboardLayout";
-import TodaysMissionWidget from "../components/dashboard/widgets/TodaysMission/TodaysMissionWidget";
+import Scribble from "../components/ui/Scribble.tsx";
+import RocketScroll from "../components/home/RocketScroll.tsx";
+import profilePic from "../assets/images/profilepic-home.jpg";
 
-const ACCENT = "#FFB800";
-const initialDate = "2026-08-18";
+const headline = "Make progress visible.";
+const headlinePrefix = "Make progress ";
 
-const initialTasks = {
-  [initialDate]: [{ id: 1, time: "09:00", title: "Solve LeetCode Daily", done: false }],
-};
+function HomeHero() {
+  const heroRef = useRef(null);
+  const isInView = useInView(heroRef, { once: true, amount: 0.4 });
+  const [typedCharacters, setTypedCharacters] = useState(0);
+  const underlineVisible = isInView && typedCharacters >= headline.length;
 
-function Card({ children, className = "" }) {
-  return <section className={`rounded-2xl border border-[#E8DCCF] bg-white p-4 shadow-sm transition-shadow hover:shadow-md ${className}`}>{children}</section>;
-}
+  useEffect(() => {
+    if (!isInView || typedCharacters >= headline.length) return undefined;
+    const timer = setTimeout(() => setTypedCharacters((current) => current + 1), 45);
+    return () => clearTimeout(timer);
+  }, [isInView, typedCharacters]);
 
-function CalendarCard({ selectedDate, setSelectedDate, tasks }) {
-  function handleDateChange(date) {
-    setSelectedDate(date.toISOString().slice(0, 10));
-  }
+  const typedPrefix = headline.slice(0, Math.min(typedCharacters, headlinePrefix.length));
+  const typedSuffix = headline.slice(headlinePrefix.length, typedCharacters);
 
   return (
-    <Card>
-      <div className="flex items-center gap-2"><CalendarDays size={16} style={{ color: ACCENT }} /><h2 className="text-sm font-semibold text-[#2D4C59]">Calendar</h2></div>
-      <Calendar
-        value={new Date(`${selectedDate}T12:00:00`)}
-        onChange={handleDateChange}
-        onClickDay={handleDateChange}
-        tileClassName={({ date }) => date.toISOString().slice(0, 10) === selectedDate ? "home-calendar-active" : ""}
-        tileContent={({ date, view }) => view === "month" && tasks[date.toISOString().slice(0, 10)]?.length ? <span className="home-calendar-dot" /> : null}
-        className="home-calendar mt-3 w-full border-0 text-sm"
-      />
-    </Card>
+    <motion.section
+      ref={heroRef}
+      id="top"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.8, ease: "easeInOut" }}
+      className="home-landing-width grid min-h-[22rem] grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)] items-center gap-4 py-10 sm:min-h-[28rem] sm:gap-8 sm:py-14"
+    >
+      <div className="min-w-0 text-left">
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#E07A5F] sm:text-xs sm:tracking-[0.2em]">YOUR PERSONAL LIFE OS</p>
+        <h1 aria-label={headline} className="home-display relative mt-3 text-3xl font-bold leading-tight text-[#9E2B25] sm:text-5xl">
+          <span aria-hidden="true">{typedPrefix}</span>
+          {typedSuffix && typedCharacters < headline.length && <span aria-hidden="true">{typedSuffix}</span>}
+          {underlineVisible && (
+            <RoughNotationGroup show={underlineVisible}>
+              <RoughNotation type="underline" color="#9E2B25" strokeWidth={2.5} animationDuration={1100} iterations={2} padding={6} multiline order={1}>
+                visible.
+              </RoughNotation>
+            </RoughNotationGroup>
+          )}
+        </h1>
+        <p className="mt-4 max-w-xl text-sm leading-6 text-[#6F5145] sm:text-base sm:leading-7">
+          Horizon brings your plans, daily habits, and personal growth together in one clear view.
+        </p>
+        <a href="#about" className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#9E2B25] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#81211D] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9E2B25]">
+          Explore Horizon <ArrowDown size={16} />
+        </a>
+      </div>
+
+      <div className="flex items-center justify-end">
+        <div className="relative flex items-center justify-end">
+          <motion.span aria-hidden="true" animate={{ rotate: [0, 16, 0], scale: [0.9, 1.12, 0.9] }} transition={{ duration: 3.8, ease: "easeInOut", repeat: Infinity }} className="absolute right-0 top-[12%] z-10 text-[#E07A5F]">
+            <Sparkles size={20} />
+          </motion.span>
+          <motion.span aria-hidden="true" animate={{ rotate: [0, -14, 0], y: [0, -4, 0] }} transition={{ duration: 4.6, ease: "easeInOut", repeat: Infinity }} className="absolute bottom-[10%] left-0 z-10 text-[#E07A5F]">
+            <Sparkles size={15} />
+          </motion.span>
+          <motion.img
+            src={profilePic}
+            alt="Anushka Vyas"
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }}
+            className="aspect-square w-full max-w-[22rem] rounded-full object-cover object-center drop-shadow-[0_14px_18px_rgba(76,45,31,0.14)]"
+          />
+        </div>
+      </div>
+    </motion.section>
   );
 }
 
-function RemindersCard({ selectedDate, tasks, setTasks }) {
-  const [showDialog, setShowDialog] = useState(false);
-  const [newReminder, setNewReminder] = useState({ title: "", time: "09:00" });
-  const reminders = tasks[selectedDate] || [];
-  const displayDate = new Date(`${selectedDate}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-
-  function addReminder(event) {
-    event.preventDefault();
-    if (!newReminder.title.trim()) return;
-    setTasks((current) => ({ ...current, [selectedDate]: [...(current[selectedDate] || []), { id: Date.now(), ...newReminder, done: false }] }));
-    setNewReminder({ title: "", time: "09:00" });
-    setShowDialog(false);
-  }
-
-  function updateReminder(id, changes) {
-    setTasks((current) => ({ ...current, [selectedDate]: current[selectedDate].map((reminder) => reminder.id === id ? { ...reminder, ...changes } : reminder) }));
-  }
-
-  function removeReminder(id) {
-    setTasks((current) => ({ ...current, [selectedDate]: current[selectedDate].filter((reminder) => reminder.id !== id) }));
-  }
-
+function AboutSection() {
   return (
-    <Card>
-      <div className="flex items-center justify-between gap-3"><h2 className="text-sm font-semibold text-[#2D4C59]">Reminders for {displayDate}</h2><button type="button" onClick={() => setShowDialog(true)} className="inline-flex items-center gap-1 rounded-lg bg-[#FFB800] px-2.5 py-1.5 text-xs font-semibold text-[#2D4C59]"><Plus size={16} /> Add</button></div>
-      <div className="mt-3 space-y-2">
-        {reminders.length ? reminders.map((reminder) => <div key={reminder.id} className="flex items-center gap-2 rounded-xl bg-[#FFF8EF] px-3 py-2.5"><button type="button" onClick={() => updateReminder(reminder.id, { done: !reminder.done })} aria-label={`Mark ${reminder.title} ${reminder.done ? "incomplete" : "complete"}`} className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${reminder.done ? "border-[#FFB800] bg-[#FFB800]" : "border-[#D1C4B0]"}`}>{reminder.done && <Check size={12} />}</button><span className="text-sm text-[#7B8790]">{reminder.time}</span><span className={`min-w-0 flex-1 text-sm ${reminder.done ? "text-[#9CA3AF] line-through" : "text-[#2D4C59]"}`}>{reminder.title}</span><button type="button" onClick={() => removeReminder(reminder.id)} aria-label={`Delete ${reminder.title}`} className="text-[#9CA3AF] hover:text-[#C84D38]"><Trash2 size={14} /></button></div>) : <p className="py-5 text-center text-sm text-[#7B8790]">No reminders for {displayDate}. Add one.</p>}
+    <motion.section
+      id="about"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.8, ease: "easeInOut" }}
+      className="border-y border-[#E9DCCB] bg-[#FBF0E1]/70"
+    >
+      <div className="home-landing-width grid gap-8 py-16 md:grid-cols-[0.9fr_1.1fr] md:gap-14 md:py-24">
+        <div className="relative self-center">
+          <Sparkles className="absolute -left-2 -top-7 h-6 w-6 -rotate-12 text-[#E07A5F]" aria-hidden="true" />
+          <svg className="home-doodle-arrow absolute -right-3 top-1 hidden h-12 w-20 text-[#E07A5F] md:block" viewBox="0 0 80 48" fill="none" aria-hidden="true">
+            <path d="M3 40C26 7 47 8 67 19M67 19L55 9M67 19L55 28" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 4" />
+          </svg>
+          <h2 className="home-display relative max-w-xl text-3xl font-bold leading-tight text-[#9E2B25] sm:text-4xl">
+            <Scribble type="underline" color="#E07A5F" multiline>
+              Hi, I'm Anushka — slightly creative, almost noob. ♡
+            </Scribble>
+          </h2>
+          <Sparkles className="absolute -bottom-7 right-8 h-5 w-5 rotate-12 text-[#E07A5F]" aria-hidden="true" />
+        </div>
+
+        <div className="space-y-4 text-sm leading-7 text-[#604B40] sm:text-base sm:leading-8">
+          <p>I'm Anushka Vyas, a software developer with over 2 years of experience.</p>
+          <p>
+            I'm almost a noob, slightly creative, and I always want to <Scribble type="highlight" color="#FFDAB9" iterations={1} padding={2}>find purpose in my work</Scribble>. Through my journey of development, I realized we don't have a single platform where we can showcase all our contributions, heatmaps, problem-solving streaks, and growth in one place.
+          </p>
+          <p className="font-semibold text-[#9E2B25]">So I started building Horizon.</p>
+        </div>
       </div>
-      {showDialog && <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2D4C59]/30 p-4"><form onSubmit={addReminder} className="w-full max-w-md rounded-2xl bg-white p-4 shadow-xl"><div className="flex items-center justify-between"><h3 className="text-sm font-semibold text-[#2D4C59]">Add Reminder</h3><button type="button" onClick={() => setShowDialog(false)} aria-label="Close dialog"><X size={16} /></button></div><label className="mt-4 block text-sm font-medium text-[#2D4C59]">Title<input value={newReminder.title} onChange={(event) => setNewReminder({ ...newReminder, title: event.target.value })} className="mt-1 w-full rounded-lg border border-[#E8DCCF] px-3 py-2 text-sm outline-none focus:border-[#FFB800]" autoFocus /></label><label className="mt-3 block text-sm font-medium text-[#2D4C59]">Time<input type="time" value={newReminder.time} onChange={(event) => setNewReminder({ ...newReminder, time: event.target.value })} className="mt-1 w-full rounded-lg border border-[#E8DCCF] px-3 py-2 text-sm outline-none focus:border-[#FFB800]" /></label><div className="mt-4 flex justify-end gap-2"><button type="button" onClick={() => setShowDialog(false)} className="rounded-lg border border-[#E8DCCF] px-3 py-2 text-sm">Cancel</button><button type="submit" className="rounded-lg bg-[#FFB800] px-3 py-2 text-sm font-semibold">Save</button></div></form></div>}
-    </Card>
+    </motion.section>
+  );
+}
+
+function StorySection() {
+  return (
+    <motion.section
+      id="story"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.18 }}
+      transition={{ duration: 0.8, ease: "easeInOut" }}
+      className="home-landing-width grid gap-8 py-16 md:grid-cols-[0.85fr_1.15fr] md:items-center md:gap-14 md:py-24"
+    >
+      <RocketScroll />
+
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#E07A5F]">A developer story, in one place</p>
+        <h2 className="home-display mt-3 text-3xl font-bold leading-tight text-[#9E2B25] sm:text-4xl">The story of how Horizon rose 🚀</h2>
+        <div className="mt-5 space-y-4 text-sm leading-7 text-[#604B40] sm:text-base sm:leading-8">
+          <p>Horizon brings your contributions together so you can share your growth with recruiters, managers, and potential employers.</p>
+          <p>Connect your LeetCode, GitHub, and Codeforces accounts in one place, then share your dashboard and developer journey with a single link.</p>
+          <p className="font-semibold text-[#9E2B25]">
+            No more sending 5 different profiles.<br />
+            <Scribble type="circle" color="#E07A5F" iterations={1} padding={2} multiline={false} className="home-story-circle">One Horizon. Your entire dev story.</Scribble>
+          </p>
+        </div>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <Link to="/profile" className="rounded-full bg-[#9E2B25] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#81211D]">Connect GitHub</Link>
+          <Link to="/profile" className="rounded-full border border-[#9E2B25]/30 bg-white/60 px-4 py-2.5 text-sm font-semibold text-[#9E2B25] transition hover:bg-white">Connect LeetCode</Link>
+          <Link to="/dashboard" className="inline-flex items-center gap-2 rounded-full px-3 py-2.5 text-sm font-semibold text-[#9E2B25] transition hover:text-[#E07A5F]">See Live Demo <ArrowRight size={15} /></Link>
+        </div>
+      </div>
+    </motion.section>
+  );
+}
+
+function HomeFooter() {
+  return (
+    <motion.footer
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.5 }}
+      transition={{ duration: 0.8, ease: "easeInOut" }}
+      className="border-t border-[#E9DCCB] bg-[#FBF0E1]/70 px-5 py-10 text-center sm:py-14"
+    >
+      <p className="home-display text-xl font-bold text-[#9E2B25] sm:text-2xl">
+        Your code. Your journey. One Horizon. — <Link to="/dashboard" className="underline decoration-[#E07A5F] decoration-2 underline-offset-4">Start building your Horizon today.</Link>
+      </p>
+    </motion.footer>
   );
 }
 
 export default function Home() {
-  const [selectedDate, setSelectedDate] = useState(initialDate);
-  const [tasks, setTasks] = useState(initialTasks);
-
   return (
-    <DashboardLayout>
-      <div className="mx-auto w-full max-w-[1100px] space-y-4">
-        <section className="home-intro relative overflow-hidden rounded-[2rem] border border-[#F7B39B] bg-[#FFFDF8] px-6 py-8 shadow-sm sm:px-10 sm:py-10">
-          <div className="home-intro-sun" aria-hidden="true" />
-          <div className="relative max-w-2xl">
-            <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#F4512A]">Your personal operating system</p>
-            <h1 className="home-display mt-3 max-w-xl text-4xl font-black leading-[0.96] text-[#9E2F1C] sm:text-6xl">Make progress visible<span className="text-[#F36B91]">.</span></h1>
-            <p className="mt-4 max-w-md text-sm leading-6 text-[#9E5B4D]">A brighter place to collect your next move, keep promises to yourself, and turn small actions into momentum.</p>
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <span className="rounded-full bg-[#F4512A] px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-white">Today, on purpose</span>
-              <span className="text-xs font-semibold text-[#D16A54]">Plan · Practice · Progress</span>
-            </div>
-          </div>
-          <div className="home-intro-burst" aria-hidden="true">✳</div>
-          <div className="home-intro-orbit" aria-hidden="true" />
-        </section>
-
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <div className="space-y-4">
-            <CalendarCard selectedDate={selectedDate} setSelectedDate={setSelectedDate} tasks={tasks} />
-            <RemindersCard selectedDate={selectedDate} tasks={tasks} setTasks={setTasks} />
-          </div>
-          <section className="home-story relative overflow-hidden rounded-[2rem] bg-[#F4512A] p-6 text-white shadow-sm sm:p-8">
-            <div className="home-story-shape" aria-hidden="true" />
-            <div className="relative">
-              <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#FFE0C2]">How Horizon works</p>
-              <h2 className="home-display mt-3 max-w-sm text-3xl font-black leading-tight sm:text-4xl">One place for the life you&apos;re building.</h2>
-              <p className="mt-4 max-w-md text-sm leading-6 text-[#FFF1E7]">Turn goals into reminders, practice into proof, and everyday effort into a story you can actually see.</p>
-              <div className="mt-7 grid grid-cols-3 gap-2 border-t border-white/30 pt-4 text-center">
-                <div><p className="text-2xl font-black">01</p><p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-[#FFE0C2]">Focus</p></div>
-                <div><p className="text-2xl font-black">02</p><p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-[#FFE0C2]">Practice</p></div>
-                <div><p className="text-2xl font-black">03</p><p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-[#FFE0C2]">Grow</p></div>
-              </div>
-            </div>
-          </section>
-        </div>
-      </div>
-      <TodaysMissionWidget />
+    <DashboardLayout
+      showSidebar
+      showTaskWidget={false}
+      showFooter={false}
+      naturalScroll
+      contentClassName="home-landing-scroll"
+    >
+      <main className="home-paper min-h-full text-[#604B40]">
+        <HomeHero />
+        <AboutSection />
+        <StorySection />
+        <HomeFooter />
+      </main>
     </DashboardLayout>
   );
 }

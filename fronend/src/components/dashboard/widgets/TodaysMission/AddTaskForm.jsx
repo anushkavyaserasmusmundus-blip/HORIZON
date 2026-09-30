@@ -18,11 +18,14 @@ export default function AddTaskForm({ onAdd }) {
       <input
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="Add a mission"
+        placeholder="Add a task"
+        aria-label="New task"
+        required
         className="flex-1 rounded-xl border border-[#F2D5A5] bg-[#FFFDF8] px-3 py-2 text-sm text-[#2D4C59] outline-none ring-0"
       />
       <button
         type="submit"
+        disabled={!value.trim()}
         className="rounded-xl bg-[#F4B643] px-3 py-2 text-sm font-semibold text-[#2D4C59] transition hover:bg-[#e9a92f]"
       >
         Add

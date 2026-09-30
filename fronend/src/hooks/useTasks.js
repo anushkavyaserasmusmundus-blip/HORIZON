@@ -1,48 +1,84 @@
-import { useMemo, useState } from "react";
-import mockTasks from "../components/dashboard/widgets/TodaysMission/mockTasks";
+import { createContext, createElement, useContext, useEffect, useMemo, useState } from "react";
+import { AuthContext } from "../context/AuthContext";
 
-export default function useTasks() {
-  const [tasks, setTasks] = useState(mockTasks);
+const TasksContext = createContext(null);
 
-  const addTask = (title) => {
-    const newTask = {
-      id: Date.now(),
-      title,
+function readTasks(username) {
+  try {
+    const storedTasks = JSON.parse(localStorage.getItem(`horizonTasks_${username}`) || "[]");
+    if (!Array.isArray(storedTasks)) return [];
+    return storedTasks.filter((task) => task && (typeof task.id === "string" || typeof task.id === "number") && typeof task.title === "string" && typeof task.completed === "boolean");
+  } catch {
+    return [];
+  }
+}
+
+export function TasksProvider({ children }) {
+  const { user } = useContext(AuthContext);
+  const username = user?.username;
+  const [taskLists, setTaskLists] = useState({});
+  const tasks = useMemo(() => username ? taskLists[username] ?? readTasks(username) : [], [taskLists, username]);
+
+  useEffect(() => {
+    if (!username || !taskLists[username]) return;
+    try {
+      localStorage.setItem(`horizonTasks_${username}`, JSON.stringify(taskLists[username]));
+    } catch {
+      // Keep the in-memory task list usable when browser storage is unavailable.
+    }
+  }, [taskLists, username]);
+
+  function updateTasks(transform) {
+    if (!username) return;
+    setTaskLists((current) => ({
+      ...current,
+      [username]: transform(current[username] ?? readTasks(username)),
+    }));
+  }
+
+  function addTask(title) {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) return;
+
+    updateTasks((current) => [{
+      id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`,
+      title: trimmedTitle,
       completed: false,
       category: "Personal",
       priority: "Medium",
       createdAt: new Date().toISOString(),
       dueDate: new Date().toISOString().slice(0, 10),
-    };
+    }, ...current]);
+  }
 
-    setTasks((current) => [newTask, ...current]);
-  };
+  function editTask(id, title) {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) return;
+    updateTasks((current) => current.map((task) => task.id === id ? { ...task, title: trimmedTitle } : task));
+  }
 
-  const toggleTask = (id) => {
-    setTasks((current) =>
-      current.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task))
-    );
-  };
+  function toggleTask(id) {
+    updateTasks((current) => current.map((task) => task.id === id ? { ...task, completed: !task.completed } : task));
+  }
 
-  const deleteTask = (id) => {
-    setTasks((current) => current.filter((task) => task.id !== id));
-  };
+  function deleteTask(id) {
+    updateTasks((current) => current.filter((task) => task.id !== id));
+  }
 
   const progress = useMemo(() => {
     if (!tasks.length) return 0;
-    const completed = tasks.filter((task) => task.completed).length;
-    return (completed / tasks.length) * 100;
+    return (tasks.filter((task) => task.completed).length / tasks.length) * 100;
   }, [tasks]);
 
-  return {
-    tasks,
-    addTask,
-    deleteTask,
-    toggleTask,
-    progress,
-  };
+  return createElement(
+    TasksContext.Provider,
+    { value: { tasks, addTask, editTask, deleteTask, toggleTask, progress } },
+    children,
+  );
 }
 
-//hooks are used to encapsulate and manage stateful logic in React components. 
-// In this case, the useTasks hook manages the state of tasks, providing functions to add, toggle, and delete tasks, as well as calculating the progress of completed tasks. 
-// This allows for a clean separation of concerns and makes it easier to reuse the task management logic across different components.
+export default function useTasks() {
+  const context = useContext(TasksContext);
+  if (!context) throw new Error("useTasks must be used within TasksProvider");
+  return context;
+}

@@ -1,18 +1,19 @@
-import { useContext, useMemo, useState } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { Star, Trash2 } from "lucide-react";
 import { AuthContext } from "../../../../context/AuthContext";
 import SkillProgress from "./SkillProgress";
+import Scribble from "../../../ui/Scribble.tsx";
 
 export default function SkillMatrix({ showAll = false, allowEdit = false }) {
   const { user, updateUserProfile } = useContext(AuthContext);
-  const skills = useMemo(() => (Array.isArray(user?.skills) ? user.skills : []), [user?.skills]);
+  const skills = Array.isArray(user?.skills) ? user.skills : [];
 
   const [newSkill, setNewSkill] = useState("");
   const [newLevel, setNewLevel] = useState(60);
   const [saving, setSaving] = useState(false);
 
-  const starredSkills = useMemo(() => skills.filter((skill) => skill.starred), [skills]);
+  const starredSkills = skills.filter((skill) => skill.starred);
   const displayedSkills = showAll ? skills : starredSkills.length > 0 ? starredSkills : skills.slice(0, 5);
 
   async function persist(updatedSkills) {
@@ -47,7 +48,7 @@ export default function SkillMatrix({ showAll = false, allowEdit = false }) {
 
   return (
     <div className="rounded-3xl border border-[#F2D5A5] bg-[#FFF8EF] p-4 text-sm">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#C84D38]">Technical Skills</p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#C84D38]"><Scribble type="underline" hover className="scribble-inline">Technical Skills</Scribble></p>
 
       <div className="mt-4 space-y-3">
         {displayedSkills.length > 0 ? (
@@ -102,9 +103,11 @@ export default function SkillMatrix({ showAll = false, allowEdit = false }) {
               <span className="w-10 text-right text-xs font-semibold text-[#C84D38]">{newLevel}%</span>
             </div>
           </div>
-          <button onClick={addSkill} disabled={saving} className="mt-3 w-full rounded-full bg-[#F4B643] px-3 py-2 text-sm font-semibold text-[#2D4C59] hover:bg-[#F3C84E] disabled:opacity-60">
-            {saving ? "Saving..." : "Add new skill"}
-          </button>
+          <Scribble type="box" hover className="scribble-hover-target mt-3 w-full">
+            <button onClick={addSkill} disabled={saving} className="w-full rounded-full bg-[#F4B643] px-3 py-2 text-sm font-semibold text-[#2D4C59] hover:bg-[#F3C84E] disabled:opacity-60">
+              {saving ? "Saving..." : "Add new skill"}
+            </button>
+          </Scribble>
         </div>
       )}
 

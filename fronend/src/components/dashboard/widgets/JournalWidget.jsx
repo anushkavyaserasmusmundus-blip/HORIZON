@@ -11,7 +11,7 @@ export default function JournalWidget() {
     try {
       const raw = localStorage.getItem("journalEntries");
       return raw ? JSON.parse(raw) : [];
-    } catch (e) {
+    } catch {
       return [];
     }
   });
@@ -19,7 +19,7 @@ export default function JournalWidget() {
   const [todayContent, setTodayContent] = useState(() => {
     try {
       return localStorage.getItem("journalTodayContent") || "";
-    } catch (e) {
+    } catch {
       return "";
     }
   });
@@ -32,7 +32,9 @@ export default function JournalWidget() {
     try {
       localStorage.setItem("journalEntries", JSON.stringify(entries));
       localStorage.setItem("journalTodayContent", todayContent);
-    } catch (e) {}
+    } catch {
+      console.error("Journal changes could not be saved in this browser.");
+    }
   }, [entries, todayContent]);
 
   function addNewEntry() {

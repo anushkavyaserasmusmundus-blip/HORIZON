@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Plus, Trash2, X } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -65,29 +65,18 @@ function AddButton({ onClick, label }) {
   );
 }
 
-export default function EditProfileModal({
-  open,
-  onClose,
-  user,
-  onSave,
-  initialTab = "basic",
-}) {
+export default function EditProfileModal(props) {
+  if (!props.open || !props.user) return null;
+
+  const key = `${props.user.id || props.user.username || "profile"}-${props.initialTab || "basic"}`;
+  return <EditProfileModalContent key={key} {...props} initialTab={props.initialTab || "basic"} />;
+}
+
+function EditProfileModalContent({ onClose, user, onSave, initialTab }) {
   const [tab, setTab] = useState(initialTab);
   const [saving, setSaving] = useState(false);
 
-  const [basic, setBasic] = useState({});
-  const [skills, setSkills] = useState([]);
-  const [experience, setExperience] = useState([]);
-  const [education, setEducation] = useState([]);
-  const [certifications, setCertifications] = useState([]);
-  const [projects, setProjects] = useState([]);
-
-  useEffect(() => {
-    if (!open || !user) return;
-
-    setTab(initialTab);
-
-    setBasic({
+  const [basic, setBasic] = useState(() => ({
       fullName: user.fullName || "",
       designation: user.designation || "",
       bio: user.bio || "",
@@ -101,40 +90,12 @@ export default function EditProfileModal({
       githubUsername: user.githubUsername || "",
       leetcodeUsername: user.leetcodeUsername || "",
       codeforcesUsername: user.codeforcesUsername || "",
-    });
-
-    setSkills(
-      Array.isArray(user.skills)
-        ? user.skills.map((s) => ({ ...s }))
-        : []
-    );
-
-    setExperience(
-      Array.isArray(user.experience)
-        ? user.experience.map((e) => ({ ...e }))
-        : []
-    );
-
-    setEducation(
-      Array.isArray(user.education)
-        ? user.education.map((e) => ({ ...e }))
-        : []
-    );
-
-    setCertifications(
-      Array.isArray(user.certifications)
-        ? user.certifications.map((c) => ({ ...c }))
-        : []
-    );
-
-    setProjects(
-      Array.isArray(user.projects)
-        ? user.projects.map((p) => ({ ...p }))
-        : []
-    );
-  }, [open, user, initialTab]);
-
-  if (!open) return null;
+  }));
+  const [skills, setSkills] = useState(() => Array.isArray(user.skills) ? user.skills.map((skill) => ({ ...skill })) : []);
+  const [experience, setExperience] = useState(() => Array.isArray(user.experience) ? user.experience.map((entry) => ({ ...entry })) : []);
+  const [education, setEducation] = useState(() => Array.isArray(user.education) ? user.education.map((entry) => ({ ...entry })) : []);
+  const [certifications, setCertifications] = useState(() => Array.isArray(user.certifications) ? user.certifications.map((entry) => ({ ...entry })) : []);
+  const [projects, setProjects] = useState(() => Array.isArray(user.projects) ? user.projects.map((entry) => ({ ...entry })) : []);
 
   function updateListItem(list, setList, index, field, value) {
     setList(

@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import { Code2, ExternalLink } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { AuthContext } from "../../../../context/AuthContext";
+import safeExternalUrl from "../../../../utils/safeExternalUrl";
 
-export default function ProfileCard() {
+export default function ProfileCard({ snapshot = false }) {
   const { user, loading } = useContext(AuthContext);
   const profileData = user || {};
 
@@ -19,10 +20,10 @@ export default function ProfileCard() {
   const displaySkills = Array.isArray(profileData.skills) ? profileData.skills.slice(0, 6) : [];
 
   const links = [
-    { label: "GitHub", value: profileData.githubUsername, icon: FaGithub, url: profileData.githubUsername ? `https://github.com/${profileData.githubUsername}` : "" },
-    { label: "LinkedIn", value: profileData.linkedin, icon: FaLinkedin, url: profileData.linkedin?.startsWith("http") ? profileData.linkedin : profileData.linkedin ? `https://linkedin.com/in/${profileData.linkedin}` : "" },
-    { label: "LeetCode", value: profileData.leetcodeUsername, icon: Code2, url: profileData.leetcodeUsername ? `https://leetcode.com/${profileData.leetcodeUsername}` : "" },
-  ].filter((link) => link.value);
+    { label: "GitHub", value: profileData.githubUsername, icon: FaGithub, url: profileData.githubUsername ? `https://github.com/${encodeURIComponent(profileData.githubUsername)}` : "" },
+    { label: "LinkedIn", value: profileData.linkedin, icon: FaLinkedin, url: profileData.linkedin ? (/^https?:\/\//i.test(profileData.linkedin) ? profileData.linkedin : `https://linkedin.com/in/${encodeURIComponent(profileData.linkedin.replace(/^@/, ""))}`) : "" },
+    { label: "LeetCode", value: profileData.leetcodeUsername, icon: Code2, url: profileData.leetcodeUsername ? `https://leetcode.com/${encodeURIComponent(profileData.leetcodeUsername)}` : "" },
+  ].map((link) => ({ ...link, url: safeExternalUrl(link.url) })).filter((link) => link.value && link.url);
 
   if (loading) {
     return (
@@ -52,12 +53,12 @@ export default function ProfileCard() {
       <div className="mt-3 flex items-center gap-2 text-xs text-[#5E6F78]">
         <span className="h-2 w-2 rounded-full bg-[#35A56B]" />
         <span>{profileData.availabilityStatus || "Availability not set"}</span>
-        {displayExperience !== undefined && <span className="ml-auto">{displayExperience} years experience</span>}
+        {displayExperience != null && <span className="ml-auto">{displayExperience} {displayExperience === 1 ? "year" : "years"} of experience</span>}
       </div>
       <p className="mt-3 text-sm leading-6 text-[#5E6F78]">{displayBio || "No professional bio added yet."}</p>
       {displaySkills.length > 0 && <div className="mt-3 flex flex-wrap gap-1.5">{displaySkills.map((skill, index) => <span key={skill.name || skill || index} className="rounded-full border border-[#F2D5A5] px-2.5 py-1 text-[11px] text-[#5E6F78]">{skill.name || skill}</span>)}</div>}
-      {links.length > 0 && <div className="mt-4 flex items-center gap-3">{links.map(({ label, icon: Icon, url }) => <a key={label} href={url} target="_blank" rel="noreferrer" aria-label={label} className="text-[#9E2F1C] transition hover:text-[#F4512A]"><Icon size={16} /></a>)}</div>}
-      <Link to="/profile" className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-[#C84D38] hover:underline">View Profile <ExternalLink size={13} /></Link>
+      {links.length > 0 && !snapshot && <div className="mt-4 flex items-center gap-3">{links.map(({ label, icon: Icon, url }) => <a key={label} href={url} target="_blank" rel="noreferrer" aria-label={label} className="text-[#9E2F1C] transition hover:text-[#F4512A]"><Icon size={16} /></a>)}</div>}
+      {!snapshot && <Link to="/profile" className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-[#C84D38] hover:underline">View Profile <ExternalLink size={13} /></Link>}
     </div>
   );
 }

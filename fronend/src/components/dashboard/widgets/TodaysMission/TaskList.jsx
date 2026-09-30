@@ -1,13 +1,13 @@
 import TaskItem from "./TaskItem.jsx";
 
-export default function TaskList({ tasks = [], onToggle, onDelete }) { 
+export default function TaskList({ tasks = [], onToggle, onEdit, onDelete }) {
     //props: tasks (array of task objects), onToggle (function to toggle task completion), onDelete (function to delete a task)
     //props drilling: tasks is an array of task objects, each with properties like id, title, completed, category, priority, createdAt, and dueDate. onToggle is a function that takes a task id and toggles its completion status. onDelete is a function that takes a task id and deletes the corresponding task from the list.
 
   return (
-    <div className="space-y-2">
+    <div className="max-h-72 space-y-2 overflow-y-auto">
       {tasks.map((task) => (
-        <TaskItem key={task.id} task={task} onToggle={onToggle} onDelete={onDelete} />
+        <TaskItem key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} />
       ))}
     </div>
   );

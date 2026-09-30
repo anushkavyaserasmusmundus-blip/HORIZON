@@ -4,13 +4,12 @@ import {
   House,
   LayoutDashboard,
   LogOut,
-  Settings,
   UserRound,
   X,
 } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
 
-function Sidebar() {
+function Sidebar({ mobileOpen, onClose }) {
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -26,13 +25,15 @@ function Sidebar() {
   ];
 
   function handleLogout() {
+    onClose();
     logout();
     navigate("/login");
   }
 
   return (
     <>
-      <aside className="fixed left-0 top-20 z-30 h-[calc(100vh-5rem)] w-60 overflow-y-auto border-r border-[#F7B39B] bg-[#FFF4E6] p-4 lg:w-56">
+      {mobileOpen && <button type="button" data-snapshot-ignore="true" aria-label="Close navigation" onClick={onClose} className="fixed inset-x-0 bottom-0 top-20 z-20 bg-[#2D4C59]/35 lg:hidden" />}
+      <aside data-snapshot-ignore="true" className={`fixed left-0 top-20 z-30 h-[calc(100vh-5rem)] w-60 overflow-y-auto border-r border-[#F7B39B] bg-[#FFF4E6] p-4 transition-transform duration-200 lg:w-56 lg:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <nav className="space-y-5">
 
           {/* Main navigation */}
@@ -41,6 +42,7 @@ function Sidebar() {
               <NavLink
                 key={item.name}
                 to={item.to}
+                onClick={onClose}
                 end={item.to === "/"}
                 className={({ isActive }) =>
                   `flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition ${
@@ -67,6 +69,7 @@ function Sidebar() {
                 <NavLink
                   key={item.name}
                   to={item.to}
+                  onClick={onClose}
                   className={({ isActive }) =>
                     `flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition ${
                       isActive
@@ -90,17 +93,10 @@ function Sidebar() {
 
             <div className="space-y-1">
 
-              {/* Settings */}
-              <button
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-[#2D4C59] transition hover:bg-[#F9C966]"
-              >
-                <Settings size={18} />
-                <span>Settings</span>
-              </button>
-
               {/* Logout */}
               <button
-                onClick={() => setShowLogoutModal(true)}
+                onClick={() => { onClose(); setShowLogoutModal(true); }}
+                type="button"
                 className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-[#2D4C59] transition hover:bg-[#F9C966]"
               >
                 <LogOut size={18} />
@@ -115,7 +111,7 @@ function Sidebar() {
 
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm">
+        <div data-snapshot-ignore="true" className="fixed inset-0 z-[100] flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm">
 
           <div className="relative w-full max-w-md rounded-3xl border border-[#F2D5A5] bg-[#FFFDF8] p-7 shadow-2xl">
 

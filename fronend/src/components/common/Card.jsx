@@ -1,3 +1,5 @@
+import Scribble from "../ui/Scribble.tsx";
+
 export default function Card({ title, children, className = "" }) {
   return (
     <div
@@ -14,7 +16,7 @@ export default function Card({ title, children, className = "" }) {
         ${className}
       `.trim()}
     >
-      {title && <h2 className="mb-4 text-xl font-semibold">{title}</h2>}
+      {title && <h2 className="mb-4 text-xl font-semibold"><Scribble type="underline" hover className="scribble-inline">{title}</Scribble></h2>}
 
       {children}
     </div>

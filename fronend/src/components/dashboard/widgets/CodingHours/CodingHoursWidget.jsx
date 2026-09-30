@@ -14,60 +14,92 @@ const platformColors = {
   Codeforces: "#3B82F6",
 };
 
-export default function CodingHoursWidget() {
-  const [leetcodeCount, setLeetcodeCount] = useState(0);
-  const [codeforcesCount, setCodeforcesCount] = useState(0);
+const responseCache = new Map();
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+function fetchApiJsonOnce(url, token) {
+  const cacheKey = `${url}:${token || "anonymous"}`;
+  const cached = responseCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) return cached.promise;
+
+  const promise = fetch(url, { headers: { Authorization: `Bearer ${token || ""}` } }).then((response) => {
+    if (!response.ok) throw new Error("Failed to fetch coding statistics");
+    return response.json();
+  });
+  const entry = { promise, expiresAt: Date.now() + 15000 };
+  responseCache.set(cacheKey, entry);
+  promise.catch(() => {
+    if (responseCache.get(cacheKey) === entry) responseCache.delete(cacheKey);
+  });
+  return promise;
+}
+
+export default function CodingHoursWidget({ renderLeetCodeDetails, onLeetCodeStateChange }) {
+  const [leetcodeProfile, setLeetcodeProfile] = useState(null);
+  const [leetcodeLoading, setLeetcodeLoading] = useState(true);
+  const [leetcodeError, setLeetcodeError] = useState(false);
+  const [codeforcesCount, setCodeforcesCount] = useState(0);
+  const [codeforcesLoading, setCodeforcesLoading] = useState(true);
+  const [codeforcesError, setCodeforcesError] = useState(false);
 
   useEffect(() => {
-    async function fetchCodingStats() {
+    let token = null;
+    try {
+      token = localStorage.getItem("token");
+    } catch {
+      // Continue with an empty bearer token if storage is unavailable.
+    }
+    let isActive = true;
+
+    async function fetchLeetCodeProfile() {
       try {
-        const token = localStorage.getItem("token");
-
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        };
-
-        const [leetcodeResponse, codeforcesResponse] =
-          await Promise.all([
-            fetch(LEETCODE_API, { headers }),
-            fetch(CODEFORCES_API, { headers }),
-          ]);
-
-        if (!leetcodeResponse.ok || !codeforcesResponse.ok) {
-          throw new Error("Failed to fetch coding statistics");
+        const leetcodeData = await fetchApiJsonOnce(LEETCODE_API, token);
+        const profile = leetcodeData?.data?.matchedUser;
+        if (!profile) throw new Error("LeetCode profile data is unavailable");
+        if (isActive) {
+          const profileWithRanking = {
+            ...profile,
+            userContestRanking: leetcodeData?.data?.userContestRanking ?? null,
+          };
+          setLeetcodeProfile(profileWithRanking);
+          onLeetCodeStateChange?.({ profile: profileWithRanking, loading: false, error: false });
         }
-
-        const leetcodeData = await leetcodeResponse.json();
-        const codeforcesData = await codeforcesResponse.json();
-
-        const leetcodeStats =
-          leetcodeData?.data?.matchedUser?.submitStats?.acSubmissionNum;
-
-        const leetcodeAll =
-          leetcodeStats?.find(
-            (item) => item.difficulty === "All"
-          );
-
-        const codeforcesSolved =
-          codeforcesData?.solvedProblems ??
-          codeforcesData?.solved ??
-          0;
-
-        setLeetcodeCount(leetcodeAll?.count ?? 0);
-        setCodeforcesCount(codeforcesSolved);
       } catch (err) {
-        console.error("Coding statistics error:", err);
-        setError(err.message);
+        if (isActive) {
+          console.error("LeetCode statistics error:", err);
+          setLeetcodeError(true);
+          onLeetCodeStateChange?.({ profile: null, loading: false, error: true });
+        }
       } finally {
-        setLoading(false);
+        if (isActive) setLeetcodeLoading(false);
       }
     }
 
-    fetchCodingStats();
-  }, []);
+    async function fetchCodeforcesStats() {
+      try {
+        const data = await fetchApiJsonOnce(CODEFORCES_API, token);
+        if (isActive) setCodeforcesCount(data?.solvedProblems ?? data?.solved ?? 0);
+      } catch (err) {
+        if (isActive) {
+          console.error("Codeforces statistics error:", err);
+          setCodeforcesError(true);
+        }
+      } finally {
+        if (isActive) setCodeforcesLoading(false);
+      }
+    }
+
+    fetchLeetCodeProfile();
+    fetchCodeforcesStats();
+    return () => {
+      isActive = false;
+    };
+  }, [onLeetCodeStateChange]);
+
+  const leetcodeStats = leetcodeProfile?.submitStats?.acSubmissionNum;
+  const leetcodeAll = leetcodeStats?.find((item) => item.difficulty === "All");
+  const leetcodeCount = leetcodeAll?.count ?? 0;
+  const loading = leetcodeLoading || codeforcesLoading;
+  const error = leetcodeError || codeforcesError;
 
   const platformData = [
     {
@@ -85,9 +117,10 @@ export default function CodingHoursWidget() {
   const totalProblems = leetcodeCount + codeforcesCount;
 
   return (
+    <>
     <Card
       title="Coding Activity"
-      className="h-full border-[#E8DCCF] bg-[#FFF8EF] p-5"
+      className="border-[#E8DCCF] bg-[#FFF8EF] p-5"
     >
       <div className="grid grid-cols-[3fr_1px_2fr] gap-0 overflow-hidden">
 
@@ -192,5 +225,7 @@ export default function CodingHoursWidget() {
 
       </div>
     </Card>
+    {renderLeetCodeDetails?.({ profile: leetcodeProfile, loading: leetcodeLoading, error: leetcodeError })}
+    </>
   );
 }
